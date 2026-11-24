@@ -6,6 +6,7 @@ package app.morphe.patches.candycrushsaga.misc.boosters
 
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.PatchException
+import app.morphe.patcher.patch.intOption
 import app.morphe.patcher.patch.mutableClassDefBy
 import app.morphe.patcher.patch.packageMetadata
 import app.morphe.patcher.patch.patch
@@ -32,8 +33,6 @@ private val SODA_BOOSTER_IDS = listOf(12002, 12003, 12005, 12020, 12021, 12022, 
 private const val SAGA_LIVES_ITEM_ID = 3669
 private const val SAGA_TIMED_LIVES_ITEM_ID = 3646
 private const val SODA_LIVES_ITEM_ID = 12299
-private const val LIVES_HOURS = 24
-private const val MINUTES_PER_HOUR = 60
 private const val SECONDS_PER_MINUTE = 60
 private const val SECONDS_PER_HOUR = 3600
 
@@ -92,7 +91,6 @@ internal val candyCrushRewardsPatch = patch {
             val values = mapOf(
                 "livesItemId" to if (soda) SODA_LIVES_ITEM_ID else SAGA_LIVES_ITEM_ID,
                 "timedLivesItemId" to if (soda) SODA_LIVES_ITEM_ID else SAGA_TIMED_LIVES_ITEM_ID,
-                "livesAmount" to if (soda) LIVES_HOURS * MINUTES_PER_HOUR else LIVES_HOURS,
                 "secondsPerLifeUnit" to if (soda) SECONDS_PER_MINUTE else SECONDS_PER_HOUR,
                 "nativeConfirmationEnabled" to if (soda) 1 else 0,
             )
@@ -148,16 +146,24 @@ internal val candyCrushRewardsPatch = patch {
 @Suppress("unused")
 val addBoostersPatch = patch(
     name = "Add boosters",
-    description = "Adds 1,000 of each booster every time the game starts. " +
+    description = "Adds a configurable quantity of each booster every time the game starts. " +
         "A booster is usable from its usual level, or from the first level with Unlock booster slots.",
 ) {
     compatibleWith(AppCompatibilities.CANDY_CRUSH_SAGA, AppCompatibilities.CANDY_CRUSH_SODA_SAGA)
     availability(requireArm64StandardInstall)
     dependsOn(candyCrushRewardsPatch)
 
+    val quantity by intOption(
+        key = "boosterQuantity",
+        default = 1000,
+        title = "Quantity per booster",
+        description = "Number of each booster granted on startup. Enter a positive whole number.",
+        required = true,
+    ) { it != null && it > 0 }
+
     execute {
-        mutableClassDefBy(BOOSTERS).replaceStub("boostersEnabled", 1, """
-            const/4 v0, 0x1
+        mutableClassDefBy(BOOSTERS).replaceStub("boosterQuantity", 1, """
+            const v0, ${checkNotNull(quantity)}
             return v0
         """)
     }

@@ -866,7 +866,7 @@
     },
     {
       "name": "Add boosters",
-      "description": "Adds 1,000 of each booster every time the game starts. A booster is usable from its usual level, or from the first level with Unlock booster slots.",
+      "description": "Adds a configurable quantity of each booster every time the game starts. A booster is usable from its usual level, or from the first level with Unlock booster slots.",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -921,7 +921,17 @@
           ]
         }
       ],
-      "options": []
+      "options": [
+        {
+          "key": "boosterQuantity",
+          "title": "Quantity per booster",
+          "description": "Number of each booster granted on startup. Enter a positive whole number.",
+          "required": true,
+          "type": "kotlin.Int",
+          "default": 1000,
+          "values": null
+        }
+      ]
     },
     {
       "name": "Add extra moves",
@@ -959,7 +969,7 @@
     },
     {
       "name": "Add extra moves",
-      "description": "Starts every level with five extra moves.",
+      "description": "Starts every level with extra moves. The number is configurable for Candy Crush Saga.",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -1014,7 +1024,17 @@
           ]
         }
       ],
-      "options": []
+      "options": [
+        {
+          "key": "extraMoves",
+          "title": "Extra moves per level",
+          "description": "Enter a positive whole number for Candy Crush Saga. Candy Crush Soda Saga adds five moves.",
+          "required": true,
+          "type": "kotlin.Int",
+          "default": 5,
+          "values": null
+        }
+      ]
     },
     {
       "name": "Add unread shortcut",
@@ -18773,7 +18793,7 @@
     },
     {
       "name": "Unlimited lives",
-      "description": "Adds 24 hours of unlimited lives every time the game starts.",
+      "description": "Adds a configurable duration of unlimited lives every time the game starts.",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -18828,7 +18848,17 @@
           ]
         }
       ],
-      "options": []
+      "options": [
+        {
+          "key": "unlimitedLivesHours",
+          "title": "Unlimited lives duration (hours)",
+          "description": "Hours of unlimited lives granted on startup. Enter a whole number from 1 to 596523.",
+          "required": true,
+          "type": "kotlin.Int",
+          "default": 24,
+          "values": null
+        }
+      ]
     },
     {
       "name": "Unlock Full HD",

@@ -5,6 +5,7 @@
 package app.morphe.patches.candycrushsaga.misc.moves
 
 import app.morphe.patcher.patch.PatchException
+import app.morphe.patcher.patch.intOption
 import app.morphe.patcher.patch.mutableClassDefBy
 import app.morphe.patcher.patch.packageMetadata
 import app.morphe.patcher.patch.patch
@@ -80,16 +81,32 @@ private val addSodaExtraMovesPatch = patch {
 @Suppress("unused")
 val addExtraMovesPatch = patch(
     name = "Add extra moves",
-    description = "Starts every level with five extra moves.",
+    description = "Starts every level with extra moves. The number is configurable for Candy Crush Saga.",
 ) {
     compatibleWith(AppCompatibilities.CANDY_CRUSH_SAGA, AppCompatibilities.CANDY_CRUSH_SODA_SAGA)
     availability(requireArm64StandardInstall)
     dependsOn(candyCrushModifiersPatch, addSodaExtraMovesPatch)
 
+    val moves by intOption(
+        key = "extraMoves",
+        default = 5,
+        title = "Extra moves per level",
+        description = "Enter a positive whole number for Candy Crush Saga. Candy Crush Soda Saga adds five moves.",
+        required = true,
+    ) { it != null && it > 0 }
+
     execute {
-        mutableClassDefBy(MODIFIERS).replaceStub("extraMovesEnabled", 1, """
-            const/4 v0, 0x1
-            return v0
-        """)
+        mutableClassDefBy(MODIFIERS).apply {
+            replaceStub("extraMovesEnabled", 1, """
+                const/4 v0, 0x1
+                return v0
+            """)
+            if (!isCandyCrushSodaSaga(packageMetadata.packageName)) {
+                replaceStub("extraMovesAmount", 1, """
+                    const v0, ${checkNotNull(moves)}
+                    return v0
+                """)
+            }
+        }
     }
 }

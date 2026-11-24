@@ -6,7 +6,7 @@
 [![Stars badge](https://img.shields.io/github/stars/hxreborn/morphe-patches?style=for-the-badge&label=Stars&color=E3B341&logo=github&logoColor=white)](https://github.com/hxreborn/morphe-patches/stargazers)
 [![Ko-fi badge](https://img.shields.io/badge/Ko--fi-Support-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/hxreborn)
 
-<a href="https://morphe.software/add-source?github=hxreborn/morphe-patches" title="Add this source to Morphe">
+<a href="https://morphe.software/add-source?github=NitishKartik/candy-crush-morphe-patches&amp;app=com.king.candycrushsaga&amp;name=Candy%20Crush%20Custom" title="Add this source to Morphe">
   <img alt="Add to Morphe" src="https://img.shields.io/badge/Morphe-Add%20this%20source-00A8FF?style=for-the-badge" height="32"/>
 </a>
 
@@ -23,6 +23,14 @@ AMOLED themes, ad and tracking removal and settings tweaks for 100+ Android apps
 <!-- INDEX_END -->
 
 </div>
+
+## Candy Crush Saga custom options
+
+[**Add to Morphe**](https://morphe.software/add-source?github=NitishKartik/candy-crush-morphe-patches&app=com.king.candycrushsaga&name=Candy%20Crush%20Custom) · [GitHub release](https://github.com/NitishKartik/candy-crush-morphe-patches/releases/tag/v1.87.0-candy-crush.1)
+
+Open the option for **Add boosters**, **Unlimited lives**, or **Add extra moves** on the patch selection screen to enter a custom value. Use the original ARM64 split APKs for Candy Crush Saga **1.340.0.1** in Standard install mode.
+
+This fork builds on [hxreborn’s patches](https://github.com/hxreborn/morphe-patches).
 
 ## <img src="https://raw.githubusercontent.com/hxreborn/morphe-patches/assets/aqua/icons/patches.png" height="48" align="absmiddle" alt="Patches"> Patches list
 
@@ -271,7 +279,7 @@ AMOLED themes, ad and tracking removal and settings tweaks for 100+ Android apps
 
 Click the button below, or manually add this repo URL to Morphe Manager: https://github.com/hxreborn/morphe-patches
 
-<a href="https://morphe.software/add-source?github=hxreborn/morphe-patches">
+<a href="https://morphe.software/add-source?github=NitishKartik/candy-crush-morphe-patches&amp;app=com.king.candycrushsaga&amp;name=Candy%20Crush%20Custom">
   <img src=".github/assets/add-to-morphe.svg" alt="Add to Morphe" height="48">
 </a>
 

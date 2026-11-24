@@ -57,6 +57,7 @@ constexpr uintptr_t MOVE_LIMIT_GETTER = 0x31bb6e0;
 constexpr uintptr_t MOVE_LIMIT_SETTER = 0x31bb758;
 constexpr uintptr_t TRACKER_MOVE_LIMIT_RETURN = 0x324a5ec;
 std::atomic<uintptr_t> activeBase{0};
+std::atomic<int> activeExtraMoves{EXTRA_MOVES};
 #if CANDY_CRUSH_SODA
 constexpr std::array<uint8_t, 16> BUILD_ID = {
     0x45, 0x5f, 0x62, 0x63, 0x0a, 0x53, 0xc9, 0x01,
@@ -134,19 +135,20 @@ int moveLimit(void *state) {
     const uintptr_t caller = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
     const uintptr_t base = activeBase.load();
     const int limit = reinterpret_cast<int (*)(void *)>(base + MOVE_LIMIT_GETTER)(state);
+    const int extraMoves = activeExtraMoves.load();
     if (caller == base + TRACKER_MOVE_LIMIT_RETURN && limit > 0
-            && limit <= std::numeric_limits<int>::max() - EXTRA_MOVES) {
-        reinterpret_cast<void (*)(void *, int)>(base + MOVE_LIMIT_SETTER)(state, limit + EXTRA_MOVES);
-        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Extra moves added, amount=%d", EXTRA_MOVES);
+            && limit <= std::numeric_limits<int>::max() - extraMoves) {
+        reinterpret_cast<void (*)(void *, int)>(base + MOVE_LIMIT_SETTER)(state, limit + extraMoves);
+        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Extra moves added, amount=%d", extraMoves);
     }
     return limit;
 }
 
 Redirects redirects;
 
-jint activate(jint features) {
+jint activate(jint features, jint extraMoves) {
     if (redirects.pending) return redirects.recover();
-    if (features == 0 || (features & ~(UNLOCK_SLOTS | ADD_MOVES)) != 0) return -1;
+    if (features == 0 || (features & ~(UNLOCK_SLOTS | ADD_MOVES)) != 0 || extraMoves <= 0) return -1;
     void *handle = dlopen(GAME_LIBRARY, RTLD_NOW | RTLD_NOLOAD);
     if (handle == nullptr) return 0;
     std::unique_ptr<void, decltype(&dlclose)> library(handle, &dlclose);
@@ -225,13 +227,14 @@ jint activate(jint features) {
         }
     }
     activeBase.store(base);
+    activeExtraMoves.store(extraMoves);
     const int result = redirects.install();
     if (result != 1) return result;
     if ((features & UNLOCK_SLOTS) != 0) {
         __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Booster slots unlocked, count=%zu", UNLOCK_GETTERS.size());
     }
     if ((features & ADD_MOVES) != 0) {
-        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Extra moves enabled, amount=%d", EXTRA_MOVES);
+        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Extra moves enabled, amount=%d", extraMoves);
     }
     return 1;
 }
@@ -240,5 +243,13 @@ jint activate(jint features) {
 
 extern "C" JNIEXPORT jint JNICALL
 Java_app_hxreborn_extension_candycrushsaga_GameModifiers_activate(JNIEnv *, jclass, jint features) {
-    return activate(features);
+    return activate(features, EXTRA_MOVES);
 }
+
+#if !CANDY_CRUSH_SODA
+extern "C" JNIEXPORT jint JNICALL
+Java_app_hxreborn_extension_candycrushsaga_GameModifiers_activateWithExtraMoves(
+        JNIEnv *, jclass, jint features, jint extraMoves) {
+    return activate(features, extraMoves);
+}
+#endif

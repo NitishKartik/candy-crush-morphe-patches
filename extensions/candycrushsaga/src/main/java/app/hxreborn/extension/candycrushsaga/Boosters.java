@@ -50,8 +50,6 @@ public final class Boosters {
 
     private static final int[] ITEM_IDS = boosterIds();
 
-    private static final int AMOUNT = 1000;
-
     private static final byte[] GAME_SHA256 = gameSha256();
 
     private static final byte[] EXTRA_MOVES_GAME_SHA256 = extraMovesGameSha256();
@@ -90,13 +88,15 @@ public final class Boosters {
 
     private static List<Boosters> createRewards() {
         List<Boosters> enabled = new ArrayList<>();
-        if (boostersEnabled()) {
-            enabled.add(new Boosters(ITEM_IDS, AMOUNT,
-                    new BoosterGrant(ITEM_IDS, AMOUNT, false, nativeConfirmationEnabled())));
+        int boosterQuantity = boosterQuantity();
+        if (boosterQuantity > 0) {
+            enabled.add(new Boosters(ITEM_IDS, boosterQuantity,
+                    new BoosterGrant(ITEM_IDS, boosterQuantity, false, nativeConfirmationEnabled())));
         }
-        if (livesEnabled()) {
-            enabled.add(new Boosters(new int[] { livesItemId() }, livesAmount(),
-                    new BoosterGrant(new int[] { timedLivesItemId() }, livesAmount() * secondsPerLifeUnit(), true,
+        int livesAmount = livesAmount();
+        if (livesAmount > 0) {
+            enabled.add(new Boosters(new int[] { livesItemId() }, livesAmount,
+                    new BoosterGrant(new int[] { timedLivesItemId() }, livesAmount * secondsPerLifeUnit(), true,
                             nativeConfirmationEnabled())));
         }
         return enabled;
@@ -134,12 +134,8 @@ public final class Boosters {
         return false;
     }
 
-    private static boolean boostersEnabled() {
-        return false;
-    }
-
-    private static boolean livesEnabled() {
-        return false;
+    private static int boosterQuantity() {
+        return 0;
     }
 
     public static void onNativeHandle(Activity current, long handle) {

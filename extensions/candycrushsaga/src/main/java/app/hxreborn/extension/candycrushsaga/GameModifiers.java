@@ -66,6 +66,10 @@ public final class GameModifiers {
         return false;
     }
 
+    private static int extraMovesAmount() {
+        return 0;
+    }
+
     public static void onNativeHandle(Activity current, long handle) {
         synchronized (INSTANCE) {
             if (handle == 0) {
@@ -117,7 +121,8 @@ public final class GameModifiers {
         }
         try {
             System.loadLibrary("ccsmodifiers");
-            int result = activate(this.features);
+            int amount = extraMovesAmount();
+            int result = amount > 0 ? activateWithExtraMoves(this.features, amount) : activate(this.features);
             recordActivation(result);
         } catch (LinkageError | SecurityException ex) {
             this.finished = !this.recovering;
@@ -141,5 +146,7 @@ public final class GameModifiers {
     }
 
     private static native int activate(int features);
+
+    private static native int activateWithExtraMoves(int features, int amount);
 
 }
